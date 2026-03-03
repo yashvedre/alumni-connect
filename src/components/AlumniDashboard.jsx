@@ -1,37 +1,79 @@
-// src/components/AlumniDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import VPM from "../assets/vpm 1.webp"; // college logo
+import { useNavigate, useParams } from "react-router-dom";
+import VPM from "../assets/vpm 1.webp";
 
 export default function AlumniDashboard({ currentUser }) {
+  const navigate = useNavigate();
+  const { id } = useParams(); // route param
+
   const [studentData, setStudentData] = useState(null);
-  const [linksForm, setLinksForm] = useState({
-    photoUrl: currentUser.alumniProfile?.photoUrl || "",
-    linkedinUrl: currentUser.alumniProfile?.linkedinUrl || "",
-  });
+  const [viewUser, setViewUser] = useState(null);
   const [savingLinks, setSavingLinks] = useState(false);
 
-  const navigate = useNavigate();
+  const [linksForm, setLinksForm] = useState({
+    photoUrl: "",
+    linkedinUrl: "",
+  });
 
-  // Load college (students) record
+  const isOwnProfile = !id || id === auth.currentUser?.uid;
+
+  /* ================= FIXED USER LOAD (ONLY CHANGE) ================= */
+  useEffect(() => {
+    async function loadUser() {
+      if (!currentUser) return;
+
+     
+      if (!id) {
+        setViewUser(currentUser);
+        setLinksForm({
+          photoUrl: currentUser?.alumniProfile?.photoUrl || "",
+          linkedinUrl: currentUser?.alumniProfile?.linkedinUrl || "",
+        });
+        return;
+      }
+
+      
+      try {
+        const snap = await getDoc(doc(db, "users", id));
+        if (snap.exists()) {
+          const data = snap.data();
+          setViewUser(data);
+          setLinksForm({
+            photoUrl: data.alumniProfile?.photoUrl || "",
+            linkedinUrl: data.alumniProfile?.linkedinUrl || "",
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load alumni:", err);
+      }
+    }
+
+    loadUser();
+  }, [id, currentUser]);
+
+  /* ================= LOAD STUDENT RECORD ================= */
   useEffect(() => {
     async function fetchStudent() {
-      if (!currentUser.studentRecordId) return;
+      if (!viewUser?.studentRecordId) return;
+
       try {
-        const ref = doc(db, "students", currentUser.studentRecordId);
+        const ref = doc(db, "students", viewUser.studentRecordId);
         const snap = await getDoc(ref);
         if (snap.exists()) setStudentData(snap.data());
       } catch (err) {
         console.error("Failed to load student record:", err);
       }
     }
-    fetchStudent();
-  }, [currentUser.studentRecordId]);
 
-  const alumni = currentUser.alumniProfile || {};
+    fetchStudent();
+  }, [viewUser?.studentRecordId]);
+
+  if (!viewUser) return null;
+
+  const alumni = viewUser.alumniProfile || {};
 
   function handleLinksChange(e) {
     setLinksForm({ ...linksForm, [e.target.name]: e.target.value });
@@ -39,6 +81,8 @@ export default function AlumniDashboard({ currentUser }) {
 
   async function handleSaveLinks(e) {
     e.preventDefault();
+    if (!isOwnProfile) return;
+
     setSavingLinks(true);
     try {
       const userRef = doc(db, "users", auth.currentUser.uid);
@@ -67,7 +111,7 @@ export default function AlumniDashboard({ currentUser }) {
     navigate("/");
   }
 
-  const initials = (currentUser.full_name || "A")
+  const initials = (viewUser.full_name || "A")
     .split(" ")
     .map((p) => p[0])
     .join("")
@@ -77,14 +121,15 @@ export default function AlumniDashboard({ currentUser }) {
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#f3f4f6", 
+        backgroundColor: "#f3f4f6",
         padding: "16px 12px 32px",
         fontFamily:
           'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
     >
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
-        
+
+        {/* HEADER */}
         <header
           style={{
             backgroundColor: "#003366",
@@ -97,13 +142,7 @@ export default function AlumniDashboard({ currentUser }) {
             justifyContent: "space-between",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <img
               src={VPM}
               alt="VPM Logo"
@@ -126,38 +165,40 @@ export default function AlumniDashboard({ currentUser }) {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <button
-              onClick={handleBackHome}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 999,
-                border: "1px solid #ffffff",
-                backgroundColor: "transparent",
-                color: "#ffffff",
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
-            >
-              ← Back to Home
-            </button>
-            <button
-              onClick={handleLogout}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 999,
-                border: "none",
-                backgroundColor: "#1a73e8",
-                color: "#ffffff",
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Logout
-            </button>
-          </div>
+          {isOwnProfile && (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={handleBackHome}
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  border: "1px solid #ffffff",
+                  backgroundColor: "transparent",
+                  color: "#ffffff",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                ← Back to Home
+              </button>
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  border: "none",
+                  backgroundColor: "#1a73e8",
+                  color: "#ffffff",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </header>
 
         
@@ -227,7 +268,7 @@ export default function AlumniDashboard({ currentUser }) {
                   color: "#111827",
                 }}
               >
-                {currentUser.full_name}
+                {viewUser.full_name}
               </div>
               <div
                 style={{
@@ -338,7 +379,7 @@ export default function AlumniDashboard({ currentUser }) {
                 Profile summary
               </h3>
               <p style={{ margin: 0, fontSize: 13, color: "#374151" }}>
-                <strong>Email:</strong> {currentUser.email}
+                <strong>Email:</strong> {viewUser.email}
               </p>
               {alumni.phone && (
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "#374151" }}>

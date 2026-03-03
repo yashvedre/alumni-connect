@@ -2,16 +2,25 @@ import "./App.css";
 import ImageCarousel from "./components/ImageCarousel";
 import convocationImg from "./assets/vpm-convocation-2.jpg";
 import VPM from "./assets/vpm 1.webp";
+
 import FacultyDashboard from "./pages/FacultyDashboard";
 import AddFaculty from "./pages/AddFaculty";
 import AboutUs from "./pages/AboutUs.jsx";
+import AlumniConnect from "./pages/AlumniConnect";
+import AlumniDashboard from "./components/AlumniDashboard";
 
-import { Routes, Route, Link } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Signup from "./pages/Signup";
+
+import { Routes, Route, Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { auth, db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
+
 import "./styles/auth.css";
 
+/* ================= HOME ================= */
 function Home() {
   return (
     <div>
@@ -34,13 +43,8 @@ function Home() {
           <h1 style={{ margin: 0, fontSize: 20 }}>VPM Polytechnic</h1>
           <p style={{ margin: 0, fontSize: 12 }}>VPM Alumni Association</p>
         </div>
-        <div
-          style={{
-            marginLeft: "auto",
-            display: "flex",
-            gap: 10,
-          }}
-        >
+
+        <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
           <Link to="/login" className="auth-btn">
             Login
           </Link>
@@ -50,6 +54,7 @@ function Home() {
         </div>
       </div>
 
+      {/* Navigation */}
       <nav className="nav-bar">
         <ul
           style={{
@@ -75,6 +80,11 @@ function Home() {
               Alumni Directory
             </Link>
           </li>
+          <li>
+            <Link style={{ textDecoration: "none" }} to="/connect">
+              Alumni Connect
+            </Link>
+          </li>
         </ul>
       </nav>
 
@@ -91,7 +101,7 @@ function Home() {
               <h2>Alumni Association</h2>
               <p>students, building the future together.</p>
               <Link to="/login" className="btn">
-                WELCOME{" "}
+                WELCOME
               </Link>
             </div>
           </div>
@@ -107,7 +117,32 @@ function Home() {
   );
 }
 
+/* ================= DASHBOARD WRAPPER ================= */
+/* This fixes same profile showing everywhere */
+function AlumniDashboardWrapper({ user }) {
+  const { id } = useParams();
+  return <AlumniDashboard key={id} currentUser={user} />;
+}
+
+/* ================= MAIN APP ================= */
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (u) => {
+      if (u) {
+        const snap = await getDoc(doc(db, "users", u.uid));
+        if (snap.exists()) {
+          setUser({ id: u.uid, ...snap.data() });
+        }
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -117,6 +152,13 @@ export default function App() {
       <Route path="/faculty" element={<FacultyDashboard />} />
       <Route path="/add-faculty" element={<AddFaculty />} />
       <Route path="/About" element={<AboutUs />} />
+      <Route path="/connect" element={<AlumniConnect />} />
+
+      {/* 🔥 THIS FIXES MULTIPLE PROFILE ISSUE */}
+      <Route
+        path="/alumni/:id"
+        element={<AlumniDashboardWrapper user={user} />}
+      />
     </Routes>
   );
 }
