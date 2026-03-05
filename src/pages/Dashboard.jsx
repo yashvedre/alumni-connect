@@ -22,7 +22,6 @@ export default function Dashboard() {
       try {
         const ref = doc(db, "users", user.uid);
         const snap = await getDoc(ref);
-
         
         if (!snap.exists()) {
           await setDoc(ref, {
@@ -52,7 +51,6 @@ export default function Dashboard() {
   if (loading) return <div style={{ padding: 24 }}>Loading...</div>;
   if (!userDoc) return <div style={{ padding: 24 }}>Unable to load user.</div>;
 
-  // FLOW
   if (!userDoc.isVerified) {
     return <VerificationForm currentUser={userDoc} onVerified={setUserDoc} />;
   }

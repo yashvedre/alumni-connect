@@ -344,7 +344,6 @@ export default function AlumniDashboard({ currentUser }) {
           </div>
         </section>
 
-        
         <div
           style={{
             display: "grid",
@@ -393,7 +392,6 @@ export default function AlumniDashboard({ currentUser }) {
               )}
             </div>
 
-            
             <div
               style={{
                 backgroundColor: "#ffffff",
@@ -508,7 +506,6 @@ export default function AlumniDashboard({ currentUser }) {
             </div>
           </div>
 
-          
           <div
             style={{
               display: "flex",

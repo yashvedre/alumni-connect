@@ -82,81 +82,80 @@ export default function Login() {
 
   return (
     <div>
-         <div className="branding-bar" style={{ display: "flex", alignItems: "center", padding: "12px 20px" }}>
-                   <img
-                     src={VPM}
-                     alt="VPM Logo"
-                     style={{ width: 68, height: 68, objectFit: "contain", marginRight: 12 }}
-                   />
-                   <div>
-                     <h1 style={{ margin: 0, fontSize: 20 }}>VPM Polytechnic</h1>
-                     <p style={{ margin: 0, fontSize: 12 }}>VPM Alumni Association</p>
-                   </div>
-                 </div>
-      
-            {/* ===== Navbar ===== */}
-            <nav className="nav-bar">
-              <ul>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/about">About Us</Link></li>
-                <li><Link to="/dashboard">Alumni Directory</Link></li>
+      <div className="branding-bar" style={{ display: "flex", alignItems: "center", padding: "12px 20px" }}>
+        <img
+          src={VPM}
+          alt="VPM Logo"
+          style={{ width: 68, height: 68, objectFit: "contain", marginRight: 12 }}
+        />
+        <div>
+          <h1 style={{ margin: 0, fontSize: 20 }}>VPM Polytechnic</h1>
+          <p style={{ margin: 0, fontSize: 12 }}>VPM Alumni Association</p>
+        </div>
+      </div>
 
-              </ul>
-            </nav>
-   
-    
-    <div className="reel-login-bg">
-      <div className="reel-card">
-        <h2 className="reel-title">VPM POLYTECHNIC</h2>
-        <p className="reel-subtitle">Sign in to your account</p>
+      {/* ===== Navbar ===== */}
+      <nav className="nav-bar">
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/about">About Us</Link></li>
+          <li><Link to="/dashboard">Alumni Directory</Link></li>
 
-        {error && <div className="reel-error">{error}</div>}
+        </ul>
+      </nav>
 
-        <form onSubmit={handleSubmit}>
-          <div className="reel-input-group">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+
+      <div className="reel-login-bg">
+        <div className="reel-card">
+          <h2 className="reel-title">VPM POLYTECHNIC</h2>
+          <p className="reel-subtitle">Sign in to your account</p>
+
+          {error && <div className="reel-error">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="reel-input-group">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <label>Email address</label>
+            </div>
+
+            <div className="reel-input-group">
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <label>Password</label>
+            </div>
+
+            <button className="reel-btn" disabled={loading}>
+              {loading ? "Signing in..." : "Login"}
+            </button>
+          </form>
+
+          {/* 🔹 GOOGLE BUTTON */}
+          <button
+            className="reel-google-btn"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
             />
-            <label>Email address</label>
-          </div>
-
-          <div className="reel-input-group">
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <label>Password</label>
-          </div>
-
-          <button className="reel-btn" disabled={loading}>
-            {loading ? "Signing in..." : "Login"}
+            Continue with Google
           </button>
-        </form>
 
-        {/* 🔹 GOOGLE BUTTON */}
-        <button
-          className="reel-google-btn"
-          onClick={handleGoogleLogin}
-          disabled={loading}
-        >
-          <img
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-            alt="Google"
-          />
-          Continue with Google
-        </button>
-
-        <p className="reel-footer">
-          New here? <Link to="/signup">Create account</Link>
-        </p>
+          <p className="reel-footer">
+            New here? <Link to="/signup">Create account</Link>
+          </p>
+        </div>
       </div>
     </div>
-   </div>
   );
 }
-

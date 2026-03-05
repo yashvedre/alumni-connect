@@ -25,9 +25,7 @@ export default function AlumniProfile() {
   return (
     <div style={{ padding: 40 }}>
       <button onClick={() => navigate(-1)}>← Back</button>
-
       <h1>{user.full_name}</h1>
-
       <div style={{ marginTop: 20 }}>
         <p><strong>Company:</strong> {p.company || "-"}</p>
         <p><strong>Job Title:</strong> {p.jobTitle || "-"}</p>

@@ -20,7 +20,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import "./styles/auth.css";
 
-/* ================= HOME ================= */
+
 function Home() {
   return (
     <div>

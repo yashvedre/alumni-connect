@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
 import {
@@ -147,7 +146,6 @@ export default function VerificationForm({ currentUser, onVerified }) {
             This is a one-time step to confirm you studied at the college.
           </p>
         </div>
-
         
         <div className="auth-form-wrapper">
           <div className="auth-card">

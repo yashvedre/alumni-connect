@@ -2,13 +2,13 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage"; // 🔥 ADD THIS
+import { getStorage } from "firebase/storage"; 
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQvZej-SH6RgQ7hIgvxO8RP66iu66gnlM",
   authDomain: "alumni-8b352.firebaseapp.com",
   projectId: "alumni-8b352",
-  storageBucket: "alumni-8b352.appspot.com", // 🔥 IMPORTANT FIX
+  storageBucket: "alumni-8b352.appspot.com", 
   messagingSenderId: "854261512420",
   appId: "1:854261512420:web:4c670f9e1397aa77f214f1",
 };

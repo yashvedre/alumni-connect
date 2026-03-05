@@ -178,7 +178,6 @@ export default function AlumniConnect() {
     setShowPrivateDialog(false);
   }
 
-  /* ================= ACCEPT REQUEST ================= */
   async function acceptRequest(uid) {
     const myRef = doc(db, "users", auth.currentUser.uid);
     const otherRef = doc(db, "users", uid);
@@ -200,6 +199,17 @@ export default function AlumniConnect() {
     setRequests(updated);
   }
 
+  async function denyRequest(uid) {
+    const myRef = doc(db, "users", auth.currentUser.uid);
+
+    const updated = requests.filter((r) => r.from !== uid);
+
+    await updateDoc(myRef, {
+      pendingRequests: updated,
+    });
+
+    setRequests(updated);
+  }
   return (
     <div className="connect-page">
       <div className="connect-container">
@@ -216,9 +226,7 @@ export default function AlumniConnect() {
           <div style={{ display: "flex", gap: 12 }}>
             <button
               className="notification-btn"
-              onClick={() =>
-                setShowNotifications(!showNotifications)
-              }
+              onClick={() => setShowNotifications(true)}
             >
               🔔 {requests.length > 0 && `(${requests.length})`}
             </button>
@@ -232,21 +240,61 @@ export default function AlumniConnect() {
           </div>
         </div>
 
-        {/* NOTIFICATIONS */}
+        {/* NOTIFICATION DIALOG */}
         {showNotifications && (
-          <div className="notification-panel">
-            <h4>Connection Requests</h4>
-            {requests.length === 0 && <p>No requests</p>}
-            {requests.map((req, i) => (
-              <div key={i} className="request-card">
-                <p>
-                  <strong>{req.name}</strong> wants to connect
-                </p>
-                <button onClick={() => acceptRequest(req.from)}>
-                  Accept
+          <div className="profile-modal-bg">
+            <div className="profile-modal">
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h3>Connection Requests</h3>
+                <button
+                  className="profile-close-btn"
+                  onClick={() => setShowNotifications(false)}
+                >
+                  ✖
                 </button>
               </div>
-            ))}
+
+              {requests.length === 0 && (
+                <p style={{ marginTop: "15px" }}>No requests</p>
+              )}
+
+              <div style={{ marginTop: "10px" }}>
+                {requests.map((req, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "10px",
+                      borderBottom: "1px solid #eee",
+                    }}
+                  >
+                    <span>
+                      <strong>{req.name}</strong> wants to connect
+                    </span>
+
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button
+                        className="connect-btn"
+                        onClick={() => acceptRequest(req.from)}
+                      >
+                        Accept
+                      </button>
+
+                      <button
+                        className="profile-close-btn"
+                        onClick={() => denyRequest(req.from)}
+                      >
+                        Deny
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
           </div>
         )}
 
@@ -376,13 +424,13 @@ export default function AlumniConnect() {
               Make Public
             </button>
             <button
-              className="profile-close-btn"
+              className="connect-btn"
               onClick={() => setVisibility("private")}
             >
               Make Private
             </button>
             <button
-              className="profile-close-btn"
+              className="connect-btn"
               onClick={() => setShowSettings(false)}
             >
               Close
