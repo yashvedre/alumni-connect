@@ -284,7 +284,7 @@ export default function AlumniConnect() {
                       </button>
 
                       <button
-                        className="profile-close-btn"
+                        className="connect-btn"
                         onClick={() => denyRequest(req.from)}
                       >
                         Deny
@@ -375,7 +375,7 @@ export default function AlumniConnect() {
               Send Request
             </button>
             <button
-              className="profile-close-btn"
+              className="connect-btn"
               onClick={() => setShowPrivateDialog(false)}
             >
               Cancel
@@ -399,7 +399,7 @@ export default function AlumniConnect() {
               🌐 Public
             </button>
             <button
-              className="profile-close-btn"
+              className="connect-btn"
               onClick={() => setVisibility("private")}
             >
               🔒 Private
